@@ -249,7 +249,7 @@ static ssize_t tun_dev_write(struct idesc *idesc, const struct iovec *iov, int c
 		return -ENOMEM;
 	}
 
-	ethhdr_build(skb->mac.ethh, netdev->dev_addr, NULL, ETH_P_IP);
+	eth_hdr(skb)->h_proto = htons(ETH_P_IP);
 	
 	raw = skb->mac.raw + ETH_HLEN;
 	for (int i = 0; i < cnt; ++i) {
