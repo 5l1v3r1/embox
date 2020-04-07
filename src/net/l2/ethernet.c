@@ -21,20 +21,6 @@
 #include <net/l3/arp.h>
 #include <net/netdevice.h>
 
-static inline void memcondcp(void *dst, const void *src, size_t sz) {
-	if (src) {
-		memcpy(dst, src, sz);
-	} else {
-		memset(dst, 0, sz);
-	}
-}
-
-void ethhdr_build(struct ethhdr *ethh, const void *ethdst, const void *ethsrc, short h_proto) {
-	ethh->h_proto = htons(h_proto);
-	memcondcp(ethh->h_dest, ethdst, ETH_ALEN);
-	memcondcp(ethh->h_source, ethsrc, ETH_ALEN);
-}
-
 static int ethernet_build_hdr(struct sk_buff *skb,
 		const struct net_header_info *hdr_info) {
 	struct ethhdr *ethh;
