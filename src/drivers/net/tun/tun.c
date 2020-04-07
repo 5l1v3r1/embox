@@ -230,7 +230,6 @@ static ssize_t tun_dev_write(struct idesc *idesc, const struct iovec *iov, int c
 	int ret = 0;
 	size_t size = 0;
 	unsigned char *raw;
-	struct ethhdr *ethh;
 
 	err = tun_netdev_by_idesc(idesc, &netdev, &tun);
 	if (err) {
@@ -249,11 +248,14 @@ static ssize_t tun_dev_write(struct idesc *idesc, const struct iovec *iov, int c
 	if (!skb) {
 		return -ENOMEM;
 	}
-
-	ethh = eth_hdr(skb);
+#if 0
+	struct ethhdr *ethh;
+	ethh = skb->mac.ethh;
 	ethh->h_proto = htons(ETH_P_IP);
 	memcpy(ethh->h_dest, netdev->dev_addr, ETH_ALEN);
 	memset(ethh->h_source, 0, ETH_ALEN);
+#endif
+	ethhdr_build(skb->mac.ethh, netdev->dev_addr, NULL, ETH_P_IP);
 	
 	raw = skb->mac.raw + ETH_HLEN;
 	for (int i = 0; i < cnt; ++i) {
