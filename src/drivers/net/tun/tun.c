@@ -80,6 +80,11 @@ static int tun_set_mac(struct net_device *dev, const void *addr) {
 
 static int tun_xmit(struct net_device *dev, struct sk_buff *skb) {
 	struct tun *tun = netdev_priv(dev);
+	struct ethhdr *ethh;
+	ethh = skb->mac.ethh;
+	ethh->h_proto = htons(ETH_P_IP);
+	memcpy(ethh->h_source, skb->dev->dev_addr, ETH_ALEN);
+	memset(ethh->h_dest, 0, ETH_ALEN);
 	skb_queue_push(&tun->rx_q, skb);
 	waitq_wakeup(&tun->wq, 1);
 	return 0;
